@@ -140,7 +140,6 @@ def multiplication_table():
         for col_el in col_nums_list:
             result = col_el*row_el
             result_list.append(result)
-        print(result_list)
         df.loc[row_el] = result_list
     print(df)
     return df
@@ -197,6 +196,7 @@ def task_check():
             break
         else:
             print('Task number should be in the list')
+            continue
 
 
 task_check()
