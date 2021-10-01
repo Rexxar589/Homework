@@ -3,6 +3,7 @@ import math
 import time
 from forex_python.converter import CurrencyRates
 
+
 # Python Practice - Session 4
 
 
@@ -53,6 +54,7 @@ class Counter:
                 self.start += 1
                 print(self.start)
 
+
 #
 # c = Counter(57, 60)
 # c.get()
@@ -72,20 +74,21 @@ class HistoryDict:
 
     def __init__(self, some_dict):
         self.some_dict = dict(some_dict)
+        self.dict_history = []
 
-    def set_value(self, key, value, dict_history=dict_history):
+    def set_value(self, key, value):
         self.key = key
         self.value = value
         self.some_dict[self.key] = self.value
-        if len(dict_history) >= 10:
-            del dict_history[0]
-        dict_history.append(self.key)
+        if len(self.dict_history) >= 10:
+            del self.dict_history[0]
+        self.dict_history.append(self.key)
 
     def get(self):
         print(self.some_dict)
 
-    def get_history(self, dict_history=dict_history):
-        print(dict_history)
+    def get_history(self):
+        print(self.dict_history)
 
 
 # hd = HistoryDict({42: '33'})
@@ -118,32 +121,34 @@ class Cipher:
         # A keyword is used as the key, and it determines the letter matchings of the cipher alphabet to the plain alphabet.
         # Repeats of letters in the word are removed, then the cipher alphabet is generated with the keyword matching to A, B, C etc. until the keyword is used up, whereupon the rest of the ciphertext letters are used in alphabetical order, excluding those already used in the key.
         """
-    alphabet = 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z'.lower().split()
 
     def __init__(self, keyword):
         self.keyword = keyword
+        self.alphabet = 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z'.lower().split()
 
-    def encode(self, words: str, alphabet=alphabet, decoded_alph=alphabet.copy(), decoded_word=''):
+    def encode(self, words: str):
         self.word = words
+        self.decoded_alph = self.alphabet.copy()
+        self.decoded_word = ''
         for n_l in range(len(self.keyword)):
-            for alph_n in range(len(decoded_alph)):
-                if decoded_alph[alph_n] == self.keyword[n_l]:
-                    del decoded_alph[alph_n]
-                    decoded_alph.insert(n_l, self.keyword[n_l])
-        decode_dict = dict(zip(decoded_alph, alphabet))
+            for alph_n in range(len(self.decoded_alph)):
+                if self.decoded_alph[alph_n] == self.keyword[n_l]:
+                    del self.decoded_alph[alph_n]
+                    self.decoded_alph.insert(n_l, self.keyword[n_l])
+        decode_dict = dict(zip(self.decoded_alph, self.alphabet))
         for letter in words:
             if letter in decode_dict.keys():
-                decoded_word += decode_dict[letter]
+                self.decoded_word += decode_dict[letter]
             elif letter in (i.upper() for i in decode_dict.keys()):
                 decode_dict_upper = dict(
-                    zip(list(let.upper() for let in decoded_alph), list(let.upper() for let in alphabet)))
-                decoded_word += decode_dict_upper[letter.upper()]
+                    zip(list(let.upper() for let in self.decoded_alph), list(let.upper() for let in self.alphabet)))
+                self.decoded_word += decode_dict_upper[letter.upper()]
             else:
-                decoded_word += letter
-        print(decoded_word)
+                self.decoded_word += letter
+        print(self.decoded_word)
 
 
-# Cipher('crypto').encode('Fjedhc dn atIDsn')
+Cipher('crypto').encode('Fjedhc dn atIDsn')
 
 
 # ### Task 4.4
@@ -337,34 +342,30 @@ class Pagination:
         # Pages indexing starts with 0.
         # Optional: implement searching/filtering pages by symblos/words and displaying pages with all the symbols on it.
         # If you're querying by symbol that appears on many pages or if you are querying by the word that is splitted in two return an array of all the occurences."""
-    pages_dict = {}
 
-    def __init__(self, text, s_per_page, pages_dict=pages_dict):
+    def __init__(self, text, s_per_page):
         self.text = text
         self.s_per_page = s_per_page
+        self.pages_dict = {}
         pages_num = int(math.ceil(len(self.text) / self.s_per_page))
         for page in range(pages_num):
-            pages_dict[page] = text[page*s_per_page:(page+1)*s_per_page]
+            self.pages_dict[page] = text[page * s_per_page:(page + 1) * s_per_page]
 
     def item_count(self):
         print(len(self.text))
 
-    @staticmethod
-    def display_page(page_num, pages_dict=pages_dict):
-        print(f'{pages_dict[page_num]!r}')
+    def display_page(self, page_num):
+        print(f'{self.pages_dict[page_num]!r}')
 
-    @staticmethod
-    def show_pages(pages_dict=pages_dict):
-        print(pages_dict)
+    def show_pages(self):
+        print(self.pages_dict)
 
-    @staticmethod
-    def page_count(pages_dict=pages_dict):
-        print(max(pages_dict.keys()))
+    def page_count(self):
+        print(max(self.pages_dict.keys()))
 
-    @staticmethod
-    def count_items_on_page(page_num, pages_dict=pages_dict):
+    def count_items_on_page(self, page_num):
         try:
-            print(len(pages_dict[page_num]))
+            print(len(self.pages_dict[page_num]))
         except Exception:
             raise Exception('Invalid index. Page is missing.')
 
@@ -374,7 +375,7 @@ class Pagination:
             word_pos = self.text.find(word)
             for letr in word:
                 letr_pos = word_pos
-                letr_pos_list.append(letr_pos+1)
+                letr_pos_list.append(letr_pos + 1)
                 word_pos += 1
         except Exception:
             raise Exception(f'\'{word}\' is missing on the pages')
@@ -391,10 +392,9 @@ class Pagination:
         for lst in list_pos_list:
             for letr_pos in letr_pos_list:
                 if letr_pos in lst:
-                    res_pages.add(list_pos_list.index(lst)+1)
+                    res_pages.add(list_pos_list.index(lst) + 1)
         res_pages = list(res_pages)
         print(res_pages)
-
 
 # pages = Pagination('Your beautiful text', 5)
 # pages.display_page(1)
