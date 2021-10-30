@@ -9,8 +9,7 @@
 		Input Python3 in terminal and press Enter, then download Python from Windows Store
 	    or
 		Install Python 3.9 trough simple installation. You can download installation file at https://www.python.org/downloads/
-	-Linux
-		run command "sudo apt install python3"
+	
 		
 	-Following modules are required for utility to work propertly:
 	'argparse', 'requests', 'bs4', 'tabulate', 'datetime', 'lxml', 'sqlite3'
@@ -19,8 +18,7 @@
     -Create and use virtual environment, using:
     "python -m venv <venv_full_path>"
     Switch to venv using:
-    "source <venv_full_path>/bin/activate" (Linux)
-    "<venv_full_path>/bin/activate" (Windows)
+    "<venv_full_path>/bin/activate"
     Install all required packages and run utility:
     "python <reader_path_in_venv>/rss_reader.py ..."
 
