@@ -8,7 +8,7 @@ setuptools.setup(
             'rss_reader = rss_reader.rss_reader:main',
         ],
     },
-    version='1.0.2',
+    version='1.0.3',
     description='rss_reader',
     author='Aleksey Stefonyak',
     author_email='aleksey.stef@gmail.com',
