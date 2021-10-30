@@ -57,7 +57,7 @@ class RssParser:
 
     def connect_to_history_db(self):
         """Creates records history database for the application"""
-        db_dir = os.path.abspath(self.file_directory + "\\rss-parser-out\\history\\" + "history.db")
+        db_dir = os.path.join(self.file_directory, os.path.join("rss-parser-out", "history", "history.db"))
         self.conn = sqlite3.connect(db_dir)
         self.cursor = self.conn.cursor()
         try:
@@ -79,7 +79,7 @@ class RssParser:
             if yn == "y":
                 try:
                     self.conn.close()
-                    os.remove(os.path.abspath(self.file_directory + "\\rss-parser-out\\history\\" + "history.db"))
+                    os.remove(os.path.join(self.file_directory, "rss-parser-out", "history", "history.db"))
                     print(f"EVERYTHING deleted =(((")
                 except Exception as e:
                     quit(e)
@@ -94,7 +94,7 @@ class RssParser:
 
     def prepare_env(self, directory: str):
         """Creates environment needed for application"""
-        new_dir = os.path.abspath(self.file_directory + f"\\{directory}\\")
+        new_dir = os.path.join(self.file_directory, directory)
         try:
             os.mkdir(new_dir)
         except FileExistsError:
@@ -108,9 +108,9 @@ class RssParser:
     def get_page_file(self):
         """.get_page allows to show page in xml format"""
         try:
-            xml_full_path = os.path.abspath(f"{self.file_directory}\\rss-parser-out\\xml"
-                                            f"\\{self.url.replace('http://', '').replace('/', '_')}"
-                                            f"_{str(datetime.date(datetime.now()))}.xml")
+            xml_full_path = os.path.join(self.file_directory, "rss-parser-out", "xml",
+                                         f"\\{self.url.replace('http://', '').replace('/', '_')}"
+                                         f"_{str(datetime.date(datetime.now()))}.xml")
             with open(xml_full_path, 'w+', encoding="UTF-8") as xml_file:
                 xml_file.write(self.soup.prettify())
             print(f"XML Content successfully saved.\nFile path: {xml_full_path}")
@@ -261,13 +261,13 @@ class RssParser:
             pub_date = str(datetime.date(datetime.now()))
         try:
             try:
-                json_title_name = os.path.abspath(self.file_directory + "\\rss-parser-out\\json\\" +
-                                                  self.rss_page_info[self.channel][0]['title'])
-                json_path = os.path.abspath(f"{json_title_name}_"
-                                            f"({self.rss_page_info[self.channel][0]['pubDate'][:16]}).json")
+                json_title_name = os.path.join(self.file_directory, "rss-parser-out", "json",
+                                               self.rss_page_info[self.channel][0]['title'])
+                json_path = os.path.join(json_title_name +
+                                         f"({self.rss_page_info[self.channel][0]['pubDate'][:16]}).json")
             except KeyError:
-                json_title_name = os.path.abspath(self.file_directory + "\\rss-parser-out\\json\\" +
-                                                  self.url.replace('http://', '').replace('/', '_'))
+                json_title_name = os.path.join(self.file_directory, "rss-parser-out", "json",
+                                               self.url.replace('http://', '').replace('/', '_'))
                 json_path = os.path.abspath(f"{json_title_name}_({pub_date}).json")
             json_file_ = open(json_path, "w+", encoding="utf8")
             try:
@@ -389,7 +389,7 @@ class RssParser:
         if limit is None:
             limit = len(self.rss_page_info[self.item])
         pdf = FPDF("L")
-        pdf.add_font('DejaVu', '', os.path.abspath('fonts\\DejaVuSansCondensed.ttf'), uni=True)
+        pdf.add_font('DejaVu', '', os.path.join('fonts', 'DejaVuSansCondensed.ttf'), uni=True)
 
         def elements_to_pdf(element: str, feed_elements: list, string_format="{:<15}\n" + ("-" * 40) + "\n{}",
                             cell_height=5, cell_width=0, font="DejaVu", font_style="", font_size=12,
@@ -438,7 +438,7 @@ class RssParser:
                         font_size=12, cell_height=4)
         file_name = f"{self.url.replace('http://', '').replace('https://', '').replace('/', '_')}_" \
                     f"{str(datetime.date(self.pub_date))}"
-        pdf_full_path = os.path.abspath(f"{self.file_directory}\\rss-parser-out\\pdf\\{file_name}.pdf")
+        pdf_full_path = os.path.join(self.file_directory, "rss-parser-out", "pdf", f"{file_name}.pdf")
         pdf.output(pdf_full_path)
         print(f"RSS Content successfully saved.\nFile path: {pdf_full_path}")
         return pdf_full_path
@@ -475,7 +475,7 @@ class RssParser:
                 book.chapters.append((f"Item {i + 1}", info))
         file_name = f"{self.url.replace('http://', '').replace('https://', '').replace('/', '_')}_" \
                     f"{str(datetime.date(self.pub_date))}"
-        fb2_full_path = os.path.abspath(f"{self.file_directory}\\rss-parser-out\\fb2\\{file_name}.fb2")
+        fb2_full_path = os.path.join(self.file_directory, "rss-parser-out", "fb2", f"{file_name}.fb2")
         book.write(fb2_full_path)
         print(f"RSS Content successfully saved.\nFile path: {fb2_full_path}")
         return fb2_full_path
