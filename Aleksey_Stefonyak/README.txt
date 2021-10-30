@@ -1,6 +1,6 @@
 ### rss_reader.py
 ### version 
-1.0.3
+1.0.4
 ### Installation
 
 	-Python >3.9 required
@@ -11,6 +11,10 @@
 		Install Python 3.9 trough simple installation. You can download installation file at https://www.python.org/downloads/
 	-Linux
 		run command "sudo apt install python3"
+		
+	-Following modules are required for utility to work propertly:
+	'argparse', 'requests', 'bs4', 'tabulate', 'datetime', 'lxml', 'sqlite3'
+		To install modules run command "pip install <module_name>"
 
 	To install utility, open terminal and type in:
 	"pip install <full_tar_archive_path>
@@ -19,6 +23,9 @@
 ### Usage
 You can find out how to use rss_reader CLI utility simply typing in OS terminal:
 "python yourfolder/rss_reader/rss_reader.py --help"
-or when installed
+or when CLI utility installed
 "rss_reader --help"
 
+### Tests usage
+To run tests:
+"python yourfolder/rss_reader/tests.py"

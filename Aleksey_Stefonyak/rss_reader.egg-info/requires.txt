@@ -4,3 +4,5 @@ bs4
 tabulate
 datetime
 lxml
+fpdf
+FB2
