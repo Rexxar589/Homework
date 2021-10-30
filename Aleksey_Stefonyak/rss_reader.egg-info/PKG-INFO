@@ -1,0 +1,15 @@
+Metadata-Version: 2.1
+Name: rss-reader
+Version: 1.0.2
+Summary: rss_reader
+Home-page: UNKNOWN
+Author: Aleksey Stefonyak
+Author-email: aleksey.stef@gmail.com
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
+
+rss_reader - CLI utility that can read and save content of rss pages in different formats
+

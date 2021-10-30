@@ -1,0 +1,6 @@
+argparse
+requests
+bs4
+tabulate
+datetime
+lxml
