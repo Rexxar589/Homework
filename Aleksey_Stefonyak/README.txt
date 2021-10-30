@@ -16,7 +16,15 @@
 	'argparse', 'requests', 'bs4', 'tabulate', 'datetime', 'lxml', 'sqlite3'
 		To install modules run command "pip install <module_name>"
 
-	To install utility, open terminal and type in:
+    -Create and use virtual environment, using:
+    "python -m venv <venv_full_path>"
+    Switch to venv using:
+    "source <venv_full_path>/bin/activate" (Linux)
+    "<venv_full_path>/bin/activate" (Windows)
+    Install all required packages and run utility:
+    "python <reader_path_in_venv>/rss_reader.py ..."
+
+	-To install utility, open terminal and type in:
 	"pip install <full_tar_archive_path>
 	
 

@@ -6,3 +6,4 @@ datetime
 lxml
 fpdf
 FB2
+wheel
