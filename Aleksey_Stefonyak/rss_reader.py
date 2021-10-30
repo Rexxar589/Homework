@@ -100,6 +100,13 @@ class RssPage:
         rss_elements_to_dict(self.item, rss_item_elem_list)
         return self.rss_page_info
 
+    @staticmethod
+    def make_brief(string):
+        n = 90
+        if n < len(string):
+            string = string[:n] + "..."
+        return string
+
     def show_full_feed_info(self):
         """
         Prints out full feed information in table format
@@ -126,19 +133,17 @@ class RssPage:
         """
         if limit is None:
             limit = len(self.rss_page_info[self.item])
-        j = 0
         if self.rss_page_info[self.item]:
-            for item in self.rss_page_info[self.item]:
-                while j < limit:
+            for j, item in enumerate(self.rss_page_info[self.item]):
+                if j <= limit:
                     item_info_list = []
                     for i, elem in enumerate(item.keys()):
                         if item[elem] is not None:
-                            item_info_list.append([elem, item[elem]])
-                    j += 1
-                    print(f"Item {j}")
+                            item_info_list.append([elem, self.make_brief(item[elem])])
+                    print(f"Item {j+1}")
                     print(tabulate(item_info_list, headers=["Element", "Content"], tablefmt="github"))
         else:
-            print("Item info should be parsed first. Use .parse() method to parse RssPage object")
+            print(f"{self.item} info should be parsed first. Use .parse() method to parse RssPage object")
 
     def show_essentials(self, limit=None, feed_info_essentials=None, item_info_essentials=None):
         """
@@ -155,29 +160,31 @@ class RssPage:
         if limit is None:
             limit = len(self.rss_page_info[self.item])
         feed_info_list = []
-        if self.rss_page_info[self.channel] != [] and self.rss_page_info[self.item] != []:
-            for feed in self.rss_page_info[self.channel]:
-                for i, elem in enumerate(feed.keys()):
-                    if feed[elem] is not None:
-                        if elem in feed_info_essentials:
-                            if isinstance(feed[elem], str):
-                                feed_info_list.append([elem, "", feed[elem]])
-                            elif isinstance(feed[elem], dict):
-                                for j, e in enumerate(feed[elem].keys()):
-                                    if feed[elem][e] is not None:
-                                        feed_info_list.append([elem, e, feed[elem][e]])
-            print(tabulate(feed_info_list, headers=["Element", "Sub-element", "Content"], tablefmt="pretty"))
-            j = 0
-            for item in self.rss_page_info[self.item]:
-                while j < limit:
+        if self.rss_page_info[self.item]:
+            try:
+                for feed in self.rss_page_info[self.channel]:
+                    for i, elem in enumerate(feed.keys()):
+                        if feed[elem] is not None:
+                            if elem in feed_info_essentials:
+                                if isinstance(feed[elem], str):
+                                    feed_info_list.append([elem, "", feed[elem]])
+                                elif isinstance(feed[elem], dict):
+                                    for j, e in enumerate(feed[elem].keys()):
+                                        if feed[elem][e] is not None:
+                                            feed_info_list.append([elem, e, self.make_brief(feed[elem][e])])
+                print(tabulate(feed_info_list, headers=["Element", "Sub-element", "Content"], tablefmt="pretty"))
+            except KeyError:
+                print(f"{self.channel} info is not provided")
+                pass
+            for j, item in enumerate(self.rss_page_info[self.item]):
+                if j <= limit:
                     item_info_list = []
                     for i, elem in enumerate(item.keys()):
                         if item[elem] is not None:
                             if elem in item_info_essentials:
-                                item_info_list.append([elem, item[elem]])
-                    j += 1
+                                item_info_list.append([elem, self.make_brief(item[elem])])
                     print()
-                    print(f"Item {j}")
+                    print(f"Item {j+1}")
                     print(tabulate(item_info_list, headers=["Element", "Content"], tablefmt="github"))
         else:
             print("Feed and item info should be parsed first. Use .parse() method to parse RssPage object")
