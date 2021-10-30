@@ -159,8 +159,10 @@ class RssParser:
 
     @staticmethod
     def make_brief(string, symbols=90):
+        string = str(string)
         if symbols < len(string):
             string = string[:symbols] + "..."
+
         return string
 
     def show_full_feed_info(self):
@@ -178,7 +180,7 @@ class RssParser:
                             elif isinstance(feed[elem], dict):
                                 for j, e in enumerate(feed[elem].keys()):
                                     if feed[elem][e] is not None:
-                                        feed_info_list.append([elem, e, self.make_brief(feed[elem][e])])
+                                        feed_info_list.append([elem, e, self.make_brief(feed[elem][e], 70)])
                 print(tabulate(feed_info_list, headers=["Element", "Sub-element", "Content"], tablefmt="pretty"))
             else:
                 print(f"{self.channel} info should be parsed first. Use .parse() method to parse RssPage object")
@@ -194,12 +196,13 @@ class RssParser:
             limit = len(self.rss_page_info[self.item])
         if self.rss_page_info[self.item]:
             for j, item in enumerate(self.rss_page_info[self.item]):
+                j += 1
                 if j <= limit:
                     item_info_list = []
                     for i, elem in enumerate(item.keys()):
                         if item[elem] is not None:
                             item_info_list.append([elem, self.make_brief(item[elem])])
-                    print(f"Item {j + 1}")
+                    print(f"Item {j}")
                     print(tabulate(item_info_list, headers=["Element", "Content"], tablefmt="github"))
         else:
             print(f"{self.item} info should be parsed first. Use .parse() method to parse RssPage object")
@@ -236,6 +239,7 @@ class RssParser:
                 print(f"{self.channel} info is not provided")
                 pass
             for j, item in enumerate(self.rss_page_info[self.item]):
+                j += 1
                 if j <= limit:
                     item_info_list = []
                     for i, elem in enumerate(item.keys()):
@@ -243,7 +247,7 @@ class RssParser:
                             if elem in item_info_essentials:
                                 item_info_list.append([elem, self.make_brief(item[elem])])
                     print()
-                    print(f"Item {j + 1}")
+                    print(f"Item {j}")
                     print(tabulate(item_info_list, headers=["Element", "Content"], tablefmt="github"))
         else:
             print("Feed and item info should be parsed first. Use .parse() method to parse RssPage object")
@@ -256,10 +260,13 @@ class RssParser:
             pub_date = str(datetime.date(datetime.now()))
         try:
             try:
-                json_title_name = self.file_directory + "\\rss-parser-out\\json\\" + self.rss_page_info[self.channel][0]['title']
+                json_title_name = self.file_directory + "\\rss-parser-out\\json\\" + \
+                                  self.rss_page_info[self.channel][0]['title']
                 json_path = f"{json_title_name}_({self.rss_page_info[self.channel][0]['pubDate'][:16]}).json"
             except KeyError:
-                json_title_name = self.file_directory + "\\rss-parser-out\\json\\" + self.url.replace('http://', '').replace('/', '_')
+                json_title_name = self.file_directory + "\\rss-parser-out\\json\\" + self.url.replace('http://',
+                                                                                                      '').replace('/',
+                                                                                                                  '_')
                 json_path = f"{json_title_name}_({pub_date}).json"
             json_file_ = open(json_path, "w+", encoding="utf8")
             try:
@@ -293,7 +300,7 @@ class RssParser:
         try:
             self.pub_date = datetime.strptime(self.rss_page_info[self.channel][0]["pubDate"],
                                               "%a, %d %b %Y %H:%M:%S %Z")
-        except (ValueError, IndexError):
+        except (ValueError, IndexError, KeyError):
             try:
                 self.pub_date = datetime.strptime(self.rss_page_info[self.channel][0]["pubDate"],
                                                   "%a, %d %b %Y %H:%M:%S %z")
@@ -384,7 +391,8 @@ class RssParser:
         pdf.add_font('DejaVu', '', 'fonts\\DejaVuSansCondensed.ttf', uni=True)
 
         def elements_to_pdf(element: str, feed_elements: list, string_format="{:<15}\n" + ("-" * 40) + "\n{}",
-                            cell_height=5, cell_width=0, font="DejaVu", font_style="", font_size=12):
+                            cell_height=5, cell_width=0, font="DejaVu", font_style="", font_size=12,
+                            rss_table_delimiter="-" * 199):
             try:
                 for i, elements in enumerate(self.rss_page_info[element]):
                     if i < limit:
@@ -411,10 +419,14 @@ class RssParser:
         feed_info_essentials = ["title", "description", "pubDate", "link"]
         item_info_essentials = ["source", "title", "description", "link"]
         res_table_str_format = "{:<15}\n" + ("-" * 40) + "\n{}"
-        rss_table_delimiter = "¯" * 130
+        rss_table_main_delimiter = "¯" * 123
         pdf.set_text_color(26, 21, 43)
-        elements_to_pdf(element=self.channel, feed_elements=feed_info_essentials, string_format=res_table_str_format,
-                        font_size=14)
+        try:
+            elements_to_pdf(element=self.channel, feed_elements=feed_info_essentials,
+                            string_format=res_table_str_format,
+                            font_size=14, rss_table_delimiter=rss_table_main_delimiter)
+        except KeyError:
+            pass
         try:
             image = self.rss_page_info[self.channel][0]["image"]
             pdf.image(image["url"], x=220, y=12)
@@ -570,7 +582,7 @@ def rss_parser():
         if cli_args.essentials:
             rss.show_essentials(cli_args.limit)
         if cli_args.json:
-            rss.rss_page_to_json_stdout()
+            rss.rss_page_to_json_stdout(cli_args.limit)
         if cli_args.json_file:
             rss.prepare_env("rss-parser-out\\json")
             rss.rss_page_to_json(cli_args.date, cli_args.limit)
@@ -581,7 +593,7 @@ def rss_parser():
         if cli_args.to_fb2:
             rss.prepare_env("rss-parser-out\\fb2")
             rss.make_date()
-            rss.to_fb2(cli_args.limit, cli_args.date)
+            rss.to_fb2(cli_args.date, cli_args.limit)
     else:
         if not cli_args.get_page and not cli_args.get_page_file:
             rss.show_full_feed_info()
